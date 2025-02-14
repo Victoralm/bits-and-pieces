@@ -23,7 +23,7 @@ services:
         volumes:
             - ./data/nginx2/html:/usr/share/nginx/html
         networks:
-            - alms-traefic-nginx-example
+            - frontend
         labels:
             - traefik.http.routers.almsNginx2.rule=Host(`nx2.localhost`)
 
@@ -36,10 +36,11 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         networks:
-            - alms-traefic-nginx-example
+            - frontend
         ports:
             - "180:80"
             - "1180:8080"
 
 networks:
-    alms-traefic-nginx-example:
+    frontend:
+        external: true
