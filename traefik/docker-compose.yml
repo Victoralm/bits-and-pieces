@@ -12,7 +12,11 @@ services:
         networks:
             - frontend
         labels:
-            - traefik.http.routers.almsNginx1.rule=Host(`nx1.localhost`)
+            - "traefik.enable=true"
+            - "traefik.http.routers.almsNginx1.rule=Host(`nx1.localhost`)"
+            - "traefik.http.routers.almsNginx1.entrypoints=websecure"
+            - "traefik.http.routers.almsNginx1.tls.certresolver=localresolver"
+            - "traefik.http.services.almsNginx1.loadbalancer.server.port=80"
 
     almsNginx2:
         container_name: almsNginx2
@@ -25,13 +29,26 @@ services:
         networks:
             - frontend
         labels:
-            - traefik.http.routers.almsNginx2.rule=Host(`nx2.localhost`)
+            - "traefik.enable=true"
+            - "traefik.http.routers.almsNginx2.rule=Host(`nx2.localhost`)"
+            - "traefik.http.routers.almsNginx2.entrypoints=websecure"
+            - "traefik.http.routers.almsNginx2.tls.certresolver=localresolver"
+            - "traefik.http.services.almsNginx2.loadbalancer.server.port=80"
 
     almsNginxTraefik:
         container_name: almsNginxTraefik
         hostname: almsNginxTraefik
         image: traefik:latest
-        command: --api.insecure=true --providers.docker
+        command:
+            - --entrypoints.web.address=:80
+            - --entrypoints.web.http.redirections.entryPoint.to=websecure
+            - --entrypoints.websecure.address=:443
+            - --providers.docker=true
+            # - --providers.docker.exposedbydefault=false
+            - --api.insecure=true
+            - --certificatesresolvers.localresolver.acme.tlschallenge=true
+            - --certificatesresolvers.localresolver.acme.email=your_email_address
+            - --certificatesresolvers.localresolver.acme.storage=/letsencrypt/acme.json
         restart: unless-stopped
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
