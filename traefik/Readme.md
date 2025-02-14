@@ -7,7 +7,7 @@ Basic setup of traefik proxy.
 Created a standard Docker network, `frontend`, to serve as the main network for all web apps:
 
 ```bash
-docker network rm <old-network-name> # Remove a previous netwot, if needed
+docker network rm <old-network-name> # Remove a previous network, if needed
 docker network create frontend
 docker network ls # To check the actual existing networks
 ```
