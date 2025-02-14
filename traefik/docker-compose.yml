@@ -10,7 +10,7 @@ services:
         volumes:
             - ./data/nginx1/html:/usr/share/nginx/html
         networks:
-            - alms-traefic-nginx-example
+            - frontend
         labels:
             - traefik.http.routers.almsNginx1.rule=Host(`nx1.localhost`)
 
