@@ -1,0 +1,45 @@
+---
+name: Alms-Traefik-Example
+services:
+    almsNginx1:
+        container_name: almsNginx1
+        hostname: almsNginx1
+        image: nginx:latest
+        ports:
+            - 780:80
+        volumes:
+            - ./data/nginx1/html:/usr/share/nginx/html
+        networks:
+            - alms-traefic-nginx-example
+        labels:
+            - traefik.http.routers.almsNginx1.rule=Host(`nx1.localhost`)
+
+    almsNginx2:
+        container_name: almsNginx2
+        hostname: almsNginx2
+        image: nginx:latest
+        ports:
+            - 880:80
+        volumes:
+            - ./data/nginx2/html:/usr/share/nginx/html
+        networks:
+            - alms-traefic-nginx-example
+        labels:
+            - traefik.http.routers.almsNginx2.rule=Host(`nx2.localhost`)
+
+    almsNginxTraefik:
+        container_name: almsNginxTraefik
+        hostname: almsNginxTraefik
+        image: traefik:latest
+        command: --api.insecure=true --providers.docker
+        restart: unless-stopped
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - alms-traefic-nginx-example
+        ports:
+            - "180:80"
+            - "1180:8080"
+
+networks:
+    alms-traefic-nginx-example:
