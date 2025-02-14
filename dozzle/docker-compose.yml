@@ -14,10 +14,6 @@ services:
     networks:
       - frontend
     labels:
-      # - traefik.http.routers.AlmsDozzle.rule=Host(`dozzle.localhost`)
-      # - "traefik.http.routers.AlmsDozzle.entrypoints=websecure"
-      # # - "traefik.http.services.AlmsDozzle.loadbalancer.server.port=8080"
-      # - "traefik.http.services.AlmsDozzle.loadbalancer.server.port=8713"
       - "traefik.enable=true"
       - "traefik.http.routers.AlmsDozzle.rule=Host(`dozzle.localhost`)"
       - "traefik.http.routers.AlmsDozzle.entrypoints=websecure"
