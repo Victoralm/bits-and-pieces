@@ -1,0 +1,30 @@
+---
+name: Alms-Portainer
+
+services:
+  AlmsPortainer:
+    container_name: AlmsPortainer
+    hostname: AlmsPortainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - "19000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer_data:/data
+    restart: unless-stopped
+    networks:
+      - frontend
+    command: -H unix:///var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsPortainer.rule=Host(`portainer.localhost`)"
+      - "traefik.http.routers.AlmsPortainer.entrypoints=websecure"
+      - "traefik.http.routers.AlmsPortainer.tls.certresolver=localresolver"
+      - "traefik.http.services.AlmsPortainer.loadbalancer.server.port=9000"
+
+networks:
+    frontend:
+        external: true
+
+volumes:
+  portainer_data:
