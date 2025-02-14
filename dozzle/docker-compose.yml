@@ -1,0 +1,29 @@
+---
+name: Alms-Dozzle
+
+services:
+  AlmsDozzle:
+    container_name: AlmsDozzle
+    hostname: AlmsDozzle
+    image: amir20/dozzle:latest
+    ports:
+      - "8713:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+    networks:
+      - frontend
+    labels:
+      # - traefik.http.routers.AlmsDozzle.rule=Host(`dozzle.localhost`)
+      # - "traefik.http.routers.AlmsDozzle.entrypoints=websecure"
+      # # - "traefik.http.services.AlmsDozzle.loadbalancer.server.port=8080"
+      # - "traefik.http.services.AlmsDozzle.loadbalancer.server.port=8713"
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsDozzle.rule=Host(`dozzle.localhost`)"
+      - "traefik.http.routers.AlmsDozzle.entrypoints=websecure"
+      - "traefik.http.routers.AlmsDozzle.tls.certresolver=localresolver"
+      - "traefik.http.services.AlmsDozzle.loadbalancer.server.port=8080"
+
+networks:
+    frontend:
+        external: true
