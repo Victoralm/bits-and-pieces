@@ -18,7 +18,12 @@ services:
     networks:
       - frontend
     labels:
-      - traefik.http.routers.AlmsHeimdall.rule=Host(`heimdall.localhost`)
+      # - traefik.http.routers.AlmsHeimdall.rule=Host(`heimdall.localhost`)
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsHeimdall.rule=Host(`heimdall.localhost`)"
+      - "traefik.http.routers.AlmsHeimdall.entrypoints=websecure"
+      - "traefik.http.routers.AlmsHeimdall.tls.certresolver=localresolver"
+      - "traefik.http.services.AlmsHeimdall.loadbalancer.server.port=80"
 
 networks:
     frontend:
