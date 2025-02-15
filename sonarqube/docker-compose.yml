@@ -1,0 +1,59 @@
+---
+name: Alms-Sonarqube
+
+services:
+    AlmsSonarqube:
+        container_name: AlmsSonarqube
+        hostname: AlmsSonarqube
+        image: sonarqube:lts-community
+        depends_on:
+            - AlmsSonarqubePostgres
+        environment:
+            # SONAR_JDBC_URL: jdbc:postgresql://db:5432/sonar
+            SONAR_JDBC_URL: jdbc:postgresql://AlmsSonarqubePostgres:5432/sonar
+            SONAR_JDBC_USERNAME: sonar
+            SONAR_JDBC_PASSWORD: sonar
+        volumes:
+            - ./data/sonarqube/data:/opt/sonarqube/data
+            - ./data/sonarqube/extensions:/opt/sonarqube/extensions
+            - ./data/sonarqube/logs:/opt/sonarqube/logs
+            - ./data/sonarqube/temp:/opt/sonarqube/temp
+        ports:
+          - '21684:9000'
+        networks:
+          - frontend
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.AlmsSonarqube.rule=Host(`sonarqube.localhost`)"
+            - "traefik.http.routers.AlmsSonarqube.entrypoints=websecure"
+            - "traefik.http.routers.AlmsSonarqube.tls.certresolver=localresolver"
+            - "traefik.http.services.AlmsSonarqube.loadbalancer.server.port=9000"
+
+    AlmsSonarqubePostgres:
+        container_name: AlmsSonarqubePostgres
+        hostname: AlmsSonarqubePostgres
+        image: postgres:latest
+        restart: always
+        ports:
+            - "21685:5432"
+        environment:
+            POSTGRES_USER: sonar
+            POSTGRES_PASSWORD: sonar
+            POSTGRES_DB: sonar
+        volumes:
+            - ./data/postgresql:/var/lib/postgresql
+            - ./data/postgresql/data:/var/lib/postgresql/data
+        networks:
+            - frontend
+
+volumes:
+    sonarqube_data:
+    sonarqube_extensions:
+    sonarqube_logs:
+    sonarqube_temp:
+    postgresql:
+    postgresql_data:
+
+networks:
+    frontend:
+        external: true
