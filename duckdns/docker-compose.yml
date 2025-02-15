@@ -1,0 +1,22 @@
+---
+name: Alms-DuckDns
+services:
+  AlmsDuckDns:
+    container_name: AlmsDuckDns
+    hostname: AlmsDuckDns
+    image: lscr.io/linuxserver/duckdns:latest
+    network_mode: host #optional
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      # - TZ=Etc/UTC #optional
+      - TZ=${TZ}
+      # - SUBDOMAINS=subdomain1,subdomain2
+      - SUBDOMAINS=${SUBDOMAINS}
+      # - TOKEN=token
+      - TOKEN=${TOKEN}
+      # - UPDATE_IP=ipv4 #optional
+      # - LOG_FILE=false #optional
+    volumes:
+      - ./data/duckdns/config:/config #optional
+    restart: unless-stopped
