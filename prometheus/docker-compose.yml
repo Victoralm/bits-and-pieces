@@ -1,0 +1,63 @@
+---
+name: Alms-Prometheus
+
+services:
+  AlmsPrometheus:
+    container_name: AlmsPrometheus
+    hostname: AlmsPrometheus
+    image: prom/prometheus:v3.1.0
+    ports:
+      - 40990:9090
+    volumes:
+      - ./data/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    networks:
+      - frontend
+
+  AlmsNodeExporter:
+    container_name: AlmsNodeExporter
+    hostname: AlmsNodeExporter
+    image: prom/node-exporter:v1.8.2
+    ports:
+      - 40991:9100
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - frontend
+
+  AlmsGrafana:
+    container_name: AlmsGrafana
+    hostname: AlmsGrafana
+    image: grafana/grafana:11.5.1
+    restart: unless-stopped
+    ports:
+      - '40992:3000'
+    volumes:
+      - ./data/grafana-storage:/var/lib/grafana
+    networks:
+      - frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsGrafana.rule=Host(`grafana.localhost`)"
+      - "traefik.http.routers.AlmsGrafana.tls.certresolver=localresolver"
+      - "traefik.http.routers.AlmsGrafana.entrypoints=websecure"
+      - "traefik.http.services.AlmsGrafana.loadbalancer.server.port=3000"
+
+volumes:
+  prometheus_data:
+  grafana-storage:
+
+networks:
+    frontend:
+        external: true
