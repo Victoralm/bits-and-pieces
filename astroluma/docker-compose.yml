@@ -1,0 +1,43 @@
+---
+name: Alms-Astroluma
+services:
+  AlmsAstroluma:
+    container_name: AlmsAstroluma
+    hostname: AlmsAstroluma
+    image: sanjeet990/astroluma:latest
+    ports:
+      - "8764:8000"
+    environment:
+      # PORT: 8764
+      NODE_ENV: production
+      SECRET_KEY: ${SECRET_KEY}
+      MONGODB_URI: ${MONGODB_URI}
+    volumes:
+      - ./data/uploads_data:/app/storage/uploads
+    depends_on:
+      - AlmsAstrolumaMongodb
+    restart: always
+    networks:
+      - frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsAstroluma.rule=Host(`astroluma.localhost`)"
+      - "traefik.http.routers.AlmsAstroluma.tls.certresolver=localresolver"
+      - "traefik.http.routers.AlmsAstroluma.entrypoints=websecure"
+      - "traefik.http.services.AlmsAstroluma.loadbalancer.server.port=8000"
+
+  AlmsAstrolumaMongodb:
+    container_name: AlmsAstrolumaMongodb
+    hostname: AlmsAstrolumaMongodb
+    image: mongo:6.0
+    ports:
+      - "28357:27017"
+    volumes:
+      - ./data/mongo_data:/data/db
+    restart: always
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    external: true

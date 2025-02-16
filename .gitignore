@@ -2,4 +2,4 @@
 /portainer/portainer_data
 /sonarqube/data
 /**/.env
-/duckdns/data
+/**/data
