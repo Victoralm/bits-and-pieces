@@ -18,6 +18,12 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
     networks:
       - frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsPrometheus.rule=Host(`prometheus.localhost`)"
+      - "traefik.http.routers.AlmsPrometheus.tls.certresolver=localresolver"
+      - "traefik.http.routers.AlmsPrometheus.entrypoints=websecure"
+      - "traefik.http.services.AlmsPrometheus.loadbalancer.server.port=9090"
 
   AlmsNodeExporter:
     container_name: AlmsNodeExporter
