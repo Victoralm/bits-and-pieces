@@ -1,0 +1,32 @@
+---
+name: Alms-Gitlab
+services:
+  web:
+    container_name: AlmsGitlab
+    hostname: AlmsGitlab
+    image: 'gitlab/gitlab-ce:17.6.5-ce.0'
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://localhost:40280'
+        gitlab_rails['gitlab_shell_ssh_port'] = 40222
+    ports:
+      - '40280:40280'
+      - '40443:443'
+      - '40222:22'
+    volumes:
+      - './data/config:/etc/gitlab'
+      - './data/logs:/var/log/gitlab'
+      - './data/gitlab:/var/opt/gitlab'
+    networks:
+      - frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsGitlab.rule=Host(`gitlab.localhost`)"
+      - "traefik.http.routers.AlmsGitlab.tls.certresolver=localresolver"
+      - "traefik.http.routers.AlmsGitlab.entrypoints=websecure"
+      - "traefik.http.services.AlmsGitlab.loadbalancer.server.port=40280"
+
+networks:
+    frontend:
+        external: true
