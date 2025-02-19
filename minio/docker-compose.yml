@@ -1,0 +1,30 @@
+---
+name: Alms-MinIO
+
+services:
+  AlmsMinIO:
+    container_name: AlmsMinIO
+    hostname: AlmsMinIO
+    image: quay.io/minio/minio:RELEASE.2025-02-18T16-25-55Z
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./data/minio:/data
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - frontend
+    ports:
+      - "52900:9000"
+      - "52901:9001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsMinIO.rule=Host(`minio.localhost`)"
+      - "traefik.http.routers.AlmsMinIO.entrypoints=websecure"
+      - "traefik.http.routers.AlmsMinIO.tls.certresolver=localresolver"
+      - "traefik.http.services.AlmsMinIO.loadbalancer.server.port=9001"
+
+networks:
+  frontend:
+    external: true
