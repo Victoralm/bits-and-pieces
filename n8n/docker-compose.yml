@@ -24,7 +24,7 @@ services:
     networks:
       - frontend
     ports:
-      - '52021:5678'
+      - "52021:5678"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.AlmsN8n.rule=Host(`n8n.localhost`)"
@@ -46,11 +46,11 @@ services:
     networks:
       - frontend
     ports:
-      - '52022:5432'
+      - "52022:5432"
 
 networks:
-    frontend:
-        external: true
+  frontend:
+    external: true
 
 volumes:
   n8n_data:
