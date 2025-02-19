@@ -1,0 +1,57 @@
+---
+name: Alms-n8n
+
+services:
+  AlmsN8n:
+    container_name: AlmsN8n
+    hostname: AlmsN8n
+    image: n8nio/n8n:latest
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: true
+      N8N_BASIC_AUTH_USER: ${N8N_USER}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASSWORD}
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: AlmsN8nDb
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/n8n_data:/home/node/.n8n
+    depends_on:
+      - AlmsN8nDb
+    restart: unless-stopped
+    networks:
+      - frontend
+    ports:
+      - '52021:5678'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsN8n.rule=Host(`n8n.localhost`)"
+      - "traefik.http.routers.AlmsN8n.entrypoints=websecure"
+      - "traefik.http.routers.AlmsN8n.tls.certresolver=localresolver"
+      - "traefik.http.services.AlmsN8n.loadbalancer.server.port=5678"
+
+  AlmsN8nDb:
+    container_name: AlmsN8nDb
+    hostname: AlmsN8nDb
+    image: postgres:12
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - frontend
+    ports:
+      - '52022:5432'
+
+networks:
+    frontend:
+        external: true
+
+volumes:
+  n8n_data:
+  postgres_data:
