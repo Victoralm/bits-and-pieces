@@ -56,8 +56,12 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.AlmsGrafana.rule=Host(`grafana.localhost`)"
-      - "traefik.http.routers.AlmsGrafana.tls.certresolver=localresolver"
-      - "traefik.http.routers.AlmsGrafana.entrypoints=websecure"
+      - "traefik.http.routers.AlmsGrafana.entrypoints=web,web-alt"
+      - "traefik.http.routers.AlmsGrafana.middlewares=https-redirect"
+      - "traefik.http.routers.AlmsGrafana-secure.rule=Host(`grafana.localhost`)"
+      - "traefik.http.routers.AlmsGrafana-secure.entrypoints=websecure"
+      - "traefik.http.routers.AlmsGrafana-secure.tls=true"
+      # - "traefik.http.routers.AlmsGrafana.tls.certresolver=localresolver"
       - "traefik.http.services.AlmsGrafana.loadbalancer.server.port=3000"
 
 volumes:
