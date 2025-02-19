@@ -1,0 +1,53 @@
+---
+name: Alms-Zentao
+
+services:
+  AlmsZentao:
+    container_name: AlmsZentao
+    hostname: AlmsZentao
+    image: easysoft/zentao:15.6
+    ports:
+      - '40581:80'
+    volumes:
+      - ./data/zentao/zentao_data:/www/zentaopms
+    environment:
+      zentao_DB_HOST: AlmsZentaoMysql
+      zentao_DB_USER: ${MYSQL_USER}
+      zentao_DB_PASSWORD: ${MYSQL_PASSWORD}
+      zentao_DB_NAME: ${MYSQL_DATABASE}
+    depends_on:
+      - AlmsZentaoMysql
+    networks:
+      - frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsZentao.rule=Host(`zentao.localhost`)"
+      - "traefik.http.routers.AlmsZentao.entrypoints=websecure"
+      - "traefik.http.routers.AlmsZentao.tls.certresolver=localresolver"
+      - "traefik.http.services.AlmsZentao.loadbalancer.server.port=80"
+
+  AlmsZentaoMysql:
+    container_name: AlmsZentaoMysql
+    hostname: AlmsZentaoMysql
+    image: mariadb:10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      # MYSQL_ROOT_PASSWORD: sua_senha
+      # MYSQL_DATABASE: zentao
+    volumes:
+      - ./data/mysql/mysql_data:/var/lib/mysql
+    ports:
+      - '40582:3306'
+    networks:
+      - frontend
+
+volumes:
+  zentao_data:
+  mysql_data:
+
+networks:
+    frontend:
+        external: true
