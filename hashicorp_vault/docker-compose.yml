@@ -6,18 +6,30 @@ services:
     hostname: AlmsHVault
     image: hashicorp/vault:latest
     environment:
-      - VAULT_DEV_ROOT_TOKEN_ID=${TOKEN_ID}
-      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200
-      - VAULT_DEV_SERVER_MODE=true
+      # VAULT_DEV_ROOT_TOKEN_ID: ${TOKEN_ID}
+      # VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      # VAULT_DEV_SERVER_MODE: true
+      VAULT_ADDR: "http://localhost:8200"
+      VAULT_API_ADDR: "http://localhost:8200"
+      VAULT_ADDRESS: "http://localhost:8200"
     volumes:
-      - ./data/vault_data:/vault/data
+      # - ./data/vault_data:/vault/data
+      # - ./data/vault_data:/vault/file
+      - ./data/vault_data/logs/:/vault/logs/:rw
+      - ./data/vault_data/data/:/vault/data/:rw
+      - ./data/vault_data/config/:/vault/config/:rw
+      # - ./data/vault_data/certs/:/certs/:rw
+      - ./data/vault_data/file/:/vault/file/:rw
     cap_add:
       - IPC_LOCK
-    restart: unless-stopped
+    entrypoint: vault server -config /vault/config/config.hcl
+    # restart: unless-stopped
+    restart: always
     networks:
       - frontend
     ports:
       - "40820:8200"
+      - "40821:8201"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.AlmsHVault.rule=Host(`vault.localhost`)"
@@ -27,7 +39,7 @@ services:
 
 volumes:
   vault_data:
-    driver: local
+    # driver: local
 
 networks:
   frontend:
