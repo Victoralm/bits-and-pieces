@@ -1,0 +1,27 @@
+---
+name: Alms-Seq
+
+services:
+  AlmsSeq:
+    container_name: AlmsSeq
+    hostname: AlmsSeq
+    image: "datalust/seq:latest"
+    networks:
+      - frontend
+    ports:
+      - "8372:80"
+    volumes:
+      - ./data/seq_data:/data
+    environment:
+      - ACCEPT_EULA=Y
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.AlmsSeq.rule=Host(`seq.localhost`)"
+      - "traefik.http.routers.AlmsSeq.tls.certresolver=localresolver"
+      - "traefik.http.routers.AlmsSeq.entrypoints=websecure"
+      - "traefik.http.services.AlmsSeq.loadbalancer.server.port=80"
+
+networks:
+  frontend:
+    external: true
